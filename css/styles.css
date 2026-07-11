@@ -238,6 +238,14 @@ body.safe-area-inset {
     transform: scale(1.1);
 }
 
+/* 대학 선택 체크박스 */
+.uni-checkbox {
+    width: 22px;
+    height: 22px;
+    accent-color: #7c3aed;
+    cursor: pointer;
+}
+
 /* 삭제 버튼 */
 .delete-btn {
     background: transparent;
@@ -389,6 +397,11 @@ input {
     -webkit-appearance: none;
     -webkit-border-radius: 0;
     appearance: none;
+}
+
+input[type="checkbox"] {
+    -webkit-appearance: checkbox;
+    appearance: auto;
 }
 
 /* 다크 모드 지원 (선택사항) */

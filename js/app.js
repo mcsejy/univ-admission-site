@@ -745,6 +745,7 @@ class BucketListApp {
 
         // 리스트 컨테이너
         this.bucketListContainer = document.getElementById('bucketListContainer');
+        this.listHint = document.getElementById('listHint');
         this.emptyState = document.getElementById('emptyState');
 
 
@@ -1448,15 +1449,13 @@ class BucketListApp {
         const isSelected = item.id === this.selectedId;
         const selectedClass = isSelected ? 'selected' : '';
 
-        const selectBtn = isSelected
-            ? `<button onclick="event.stopPropagation(); app.handleSelect('${item.id}')"
-                 title="선택 해제"
-                 class="flex-shrink-0 flex items-center gap-1 pl-1.5 pr-2.5 py-1 rounded-full bg-violet-500 border-2 border-violet-500 text-white text-[11px] font-bold transition-all hover:bg-violet-600">
-                 <span class="w-3.5 h-3.5 rounded-full bg-white text-violet-600 flex items-center justify-center text-[9px] leading-none">✓</span>선택됨</button>`
-            : `<button onclick="event.stopPropagation(); app.handleSelect('${item.id}')"
-                 title="선택"
-                 class="flex-shrink-0 flex items-center gap-1 pl-1.5 pr-2.5 py-1 rounded-full border-2 border-slate-300 bg-white text-slate-400 text-[11px] font-bold transition-all hover:border-violet-400 hover:text-violet-500 hover:bg-violet-50">
-                 <span class="w-3.5 h-3.5 rounded-full border-2 border-current"></span>선택</button>`;
+        const selectBtn = `
+            <label class="flex-shrink-0 flex flex-col items-center gap-0.5 cursor-pointer select-none px-1 py-0.5"
+                   onclick="event.stopPropagation()" title="체크하면 정보를 확인할 수 있어요">
+                <input type="checkbox" class="uni-checkbox" ${isSelected ? 'checked' : ''}
+                       onchange="app.handleSelect('${item.id}')">
+                <span class="text-[9px] font-bold ${isSelected ? 'text-violet-600' : 'text-slate-400'}">정보보기</span>
+            </label>`;
 
         return `
             <div class="bucket-item ${selectedClass} bg-white rounded-xl p-3 flex items-center gap-3 shadow-sm border border-slate-100 hover:shadow-md transition-all cursor-pointer"
@@ -1505,11 +1504,15 @@ class BucketListApp {
         if (bucketList.length === 0) {
             this.bucketListContainer.innerHTML = '';
             this.emptyState.classList.remove('hidden');
+            this.listHint.classList.add('hidden');
+            this.listHint.classList.remove('flex');
             return;
         }
 
         // 빈 상태 숨기기
         this.emptyState.classList.add('hidden');
+        this.listHint.classList.remove('hidden');
+        this.listHint.classList.add('flex');
 
         // 리스트 렌더링
         const html = bucketList.map(item => this.createBucketItemHTML(item)).join('');
