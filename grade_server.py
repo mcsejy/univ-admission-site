@@ -115,12 +115,12 @@ def parse_grade_html(html_text: str, dept_filter: str = "") -> list:
         if len(rows) < 4:
             continue
 
-        # 행0: 첫 셀이 "모집단위"이고 둘째 셀이 전형명인 테이블만 처리
+        # 행0: 첫 셀이 "모집단위"(또는 "모집단위명" 등 변형)이고 둘째 셀이 전형명인 테이블만 처리
         first_tds = rows[0].find_all("td")
         if not first_tds or len(first_tds) < 2:
             continue
         first_cell = first_tds[0].get_text(strip=True)
-        if first_cell != "모집단위":
+        if not first_cell.startswith("모집단위"):
             continue
         jeonhyeong = first_tds[1].get_text(strip=True)
         # 유효한 전형명인지 확인

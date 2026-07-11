@@ -786,6 +786,21 @@ let lastFetchCode = '';   // 캐시된 대학 코드
 let myGradeAllRows = [];  // 필터용 전체 행
 let _compareData  = null; // 마지막 조회 전체 데이터 (학과 실시간 필터용)
 
+// 대학마다 표기가 다른 학과명 동의어 그룹 (예: 반도체 신설학과)
+const DEPT_NAME_ALIASES = [
+  ['시스템반도체', '지능형반도체', '반도체시스템'],
+];
+
+// deptFilter 와 실제 학과명이 동의어 그룹을 통해 일치하는지 확인
+function deptNameMatches(deptName, deptFilter) {
+  if (deptName.includes(deptFilter)) return true;
+  for (const group of DEPT_NAME_ALIASES) {
+    const filterInGroup = group.some(k => deptFilter.includes(k) || k.includes(deptFilter));
+    if (filterInGroup && group.some(k => deptName.includes(k))) return true;
+  }
+  return false;
+}
+
 // 연도 데이터에서 deptFilter 텍스트가 포함된 행만 남기기
 function filterYearData(yearData, deptFilter) {
   if (!yearData?.data) return yearData;
@@ -793,7 +808,7 @@ function filterYearData(yearData, deptFilter) {
   const filtered = {};
   for (const [label, rows] of Object.entries(yearData.data)) {
     const matching = (rows || []).filter(r =>
-      (r.dept || '').includes(deptFilter)
+      deptNameMatches(r.dept || '', deptFilter)
     );
     if (matching.length > 0) filtered[label] = matching;
   }
