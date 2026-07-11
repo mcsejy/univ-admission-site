@@ -578,7 +578,9 @@ document.getElementById('searchBtn').addEventListener('click', async () => {
 });
 
 function setLoading(on) {
-  document.getElementById('btnIcon').textContent = on ? '⏳' : '🔍';
+  const icon = document.getElementById('btnIcon');
+  icon.textContent = on ? '⏳' : '🔍';
+  icon.classList.toggle('animate-spin', on);
   document.getElementById('btnText').textContent = on ? '조회 중...' : '합격등급 조회';
   document.getElementById('searchBtn').disabled = on;
   document.getElementById('searchBtn').style.opacity = on ? '0.7' : '1';
