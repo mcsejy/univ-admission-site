@@ -103,11 +103,11 @@
           <select id="univSelect" class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white transition">
             <option value="">— 대학 선택 —</option>
           </select>
-          <div class="mt-1.5 flex items-center gap-1.5">
-            <input id="univCode" type="text" placeholder="목록에 없으면 adiga.kr 코드 직접 입력 (7자리, 예: 0000169)"
-              class="flex-1 border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs bg-gray-50 focus:outline-none focus:ring-1 focus:ring-indigo-300 focus:bg-white transition text-gray-500 placeholder-gray-300" />
-            <a href="https://www.adiga.kr" target="_blank"
-              class="text-xs text-indigo-400 hover:text-indigo-600 whitespace-nowrap">코드 찾기 ↗</a>
+          <div class="hidden mt-1.5 items-center gap-1.5">
+            <input id="univCode" type="text" placeholder="목록에 없으면 adiga.kr 코드 직접 입력 (7자리, 예: 0000169)" disabled
+              class="flex-1 border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs bg-gray-100 focus:outline-none transition text-gray-400 placeholder-gray-300 cursor-not-allowed" />
+            <span aria-disabled="true"
+              class="text-xs text-gray-300 whitespace-nowrap cursor-not-allowed select-none">코드 찾기 ↗</span>
           </div>
         </div>
 
@@ -136,7 +136,7 @@
           🔑
         </button>
       </div>
-      <p id="statusMsg" class="text-center text-xs text-gray-400 mt-2 min-h-[1rem]"></p>
+      <p id="statusMsg" class="text-center text-sm font-semibold text-gray-500 mt-2 min-h-[1.25rem]"></p>
 
     </div>
 
@@ -390,27 +390,26 @@ async function fetchGeminiGrade(univName, dept, tab) {
 }
 
 async function tryGeminiFallback(code, dept, tab) {
-  setStatus('❌ adiga.kr — 없어요');
   await new Promise(r => setTimeout(r, 1200));
 
   const apiKey = localStorage.getItem('geminiApiKey');
   if (!apiKey) {
-    setStatus('🔑 Gemini API 키가 없어요 — 오른쪽 🔑 버튼으로 등록하세요');
+    setStatus('🔑 제미나이(Gemini) API 키가 없어요 — 오른쪽 🔑 버튼으로 등록하세요');
     return;
   }
   if (!dept) {
-    setStatus('학과명을 입력하면 Gemini로 조회할 수 있어요');
+    setStatus('학과명을 입력하면 2️⃣ 제미나이(Gemini)로 조회할 수 있어요');
     return;
   }
   const sel = document.getElementById('univSelect');
   const univName = sel.options[sel.selectedIndex]?.text?.replace(/\s*\(.*\)/, '').trim() || code;
-  setStatus(`🤖 Gemini에서 ${univName} ${dept} 조회 중...`);
+  setStatus(`2️⃣ 제미나이(Gemini)에서 찾고 있습니다... (${univName} ${dept})`);
   const grade9 = await fetchGeminiGrade(univName, dept, tab);
   if (grade9) {
     showGeminiResult(univName, dept, tab, grade9);
-    setStatus(`🤖 Gemini 추정값 — ${grade9.toFixed(2)}등급 (참고용)`);
+    setStatus(`🤖 제미나이 추정값 — ${grade9.toFixed(2)}등급 (참고용)`);
   } else {
-    setStatus('❌ Gemini — 없지롱');
+    setStatus('❌ 제미나이에서도 찾지 못했어요');
   }
 }
 
@@ -515,7 +514,7 @@ document.getElementById('searchBtn').addEventListener('click', async () => {
   _compareData = null;
   document.getElementById('resultArea').style.display = 'none';
   document.getElementById('compareArea').style.display = 'none';
-  setStatus('adiga.kr에서 데이터 조회 중... (약 15~30초 소요)');
+  setStatus('1️⃣ 어디가(adiga.kr)에서 찾고 있습니다... (약 15~30초 소요)');
 
   try {
     // dept 필터 없이 전체 학과 조회 → 클라이언트에서 실시간 필터링
@@ -537,7 +536,7 @@ document.getElementById('searchBtn').addEventListener('click', async () => {
       // 데이터 없음 → 유사학과 adiga.kr 추정
       const mapping = dept ? findSimilarDeptMapping(dept) : null;
       if (mapping) {
-        setStatus(`공식 데이터 없음 — 유사학과 기반 추정 중 (${mapping.label})...`);
+        setStatus(`1️⃣ 어디가 공식 데이터 없음 — 유사학과 기반으로 어디가에서 추정 중 (${mapping.label})...`);
         const estData = await estimateFromAdigaRefs(code, dept, tab, mapping);
         if (estData) {
           renderResult('result2025', estData.y2025);
@@ -558,19 +557,19 @@ document.getElementById('searchBtn').addEventListener('click', async () => {
           setStatus(`📐 유사학과 가중 추정값 (${est.estimated.toFixed(2)}등급) — [추정치]`);
           document.getElementById('estimationNotice').scrollIntoView({ behavior: 'smooth', block: 'start' });
         } else {
-          setStatus(`공식 데이터 없음 — adiga.kr에 참조학과(${mapping.refs.map(r=>r.dept).join(', ')}) 데이터도 없음`);
+          setStatus(`1️⃣ 어디가 공식 데이터 없음 (참조학과 ${mapping.refs.map(r=>r.dept).join(', ')}도 없음) — 2️⃣ 제미나이로 찾고 있습니다...`);
           await tryGeminiFallback(code, dept, tab);
         }
       } else {
-        setStatus(`"${dept || '해당학과'}" 공식 데이터 없음 — Gemini 조회 중...`);
+        setStatus(`1️⃣ 어디가에 "${dept || '해당학과'}" 데이터 없음 — 2️⃣ 제미나이에서 찾고 있습니다...`);
         await tryGeminiFallback(code, dept, tab);
       }
     }
   } catch (e) {
     if (e.name === 'TimeoutError') {
-      setStatus('⚠️ 시간 초과 — Gemini로 대체 조회 중...');
+      setStatus('⚠️ 1️⃣ 어디가 응답 시간 초과 — 2️⃣ 제미나이에서 찾고 있습니다...');
     } else {
-      setStatus(`⚠️ 서버 오류 (${e.message}) — Gemini로 대체 조회 중...`);
+      setStatus(`⚠️ 1️⃣ 어디가 서버 오류 (${e.message}) — 2️⃣ 제미나이에서 찾고 있습니다...`);
     }
     await tryGeminiFallback(code, dept, tab);
   } finally {
@@ -799,10 +798,10 @@ function reRenderWithDeptFilter() {
     renderCompare(y2025, y2026);
     document.getElementById('resultArea').style.display = 'block';
     document.getElementById('estimationNotice').style.display = 'none';
-    setStatus(`조회 완료${filter ? ' — "' + filter + '" 포함 학과 표시 중' : ''}`);
+    setStatus(`✅ 1️⃣ 어디가 조회 완료${filter ? ' — "' + filter + '" 포함 학과 표시 중' : ''}`);
   } else if (filter) {
     document.getElementById('resultArea').style.display = 'none';
-    setStatus(`"${filter}" 포함 학과 없음 — Gemini 조회 중...`);
+    setStatus(`1️⃣ 어디가에 "${filter}" 포함 학과 없음 — 2️⃣ 제미나이에서 찾고 있습니다...`);
     const code = (document.getElementById('univCode').value ||
                   document.getElementById('univSelect').value).trim();
     const tab  = document.getElementById('tabSelect').value;
