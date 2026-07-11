@@ -21,10 +21,13 @@
   .grade-low   { background: #fee2e2; color: #991b1b; }
   .grade-none  { background: #f3f4f6; color: #9ca3af; }
   table { border-collapse: collapse; width: 100%; }
-  th, td { border: 1px solid #e5e7eb; padding: 0.35rem 0.5rem; font-size: 0.8rem; }
+  th, td { border: 1px solid #e5e7eb; padding: 0.35rem 0.5rem; font-size: 0.8rem; word-break: keep-all; overflow-wrap: break-word; }
   th { background: #f1f5f9; font-weight: 600; text-align: center; }
   td:first-child { font-weight: 500; }
   tr:hover td { background: #f8fafc; }
+  @media (max-width: 640px) {
+    .dept-col { width: 100px; max-width: 100px; }
+  }
   /* 나의 등급 판정 행 색상 */
   .row-pass   td { background: #f0fdf4 !important; }
   .row-border td { background: #fefce8 !important; }
@@ -656,7 +659,7 @@ function renderResult(containerId, yearData) {
       <table>
         <thead><tr>
           <th class="text-left">전형</th>
-          <th class="text-left">모집단위</th>
+          <th class="text-left dept-col">모집단위</th>
           <th>모집</th>
           <th>경쟁률</th>
           <th>50%컷</th>
@@ -666,7 +669,7 @@ function renderResult(containerId, yearData) {
     for (const r of rows) {
       html += `<tr>
         <td class="text-gray-500">${escHtml(r.jeonhyeong || '')}</td>
-        <td>${escHtml(r.dept || '')}</td>
+        <td class="dept-col">${escHtml(r.dept || '')}</td>
         <td class="text-center">${escHtml(r.capacity || '')}</td>
         <td class="text-center">${escHtml(r.competition || '')}</td>
         <td class="text-center">${gradeBadge(r.grade_50)}</td>
@@ -691,7 +694,7 @@ function renderCompare(d2025, d2026) {
     <thead>
       <tr>
         <th class="text-left" rowspan="2">전형</th>
-        <th class="text-left" rowspan="2">모집단위</th>
+        <th class="text-left dept-col" rowspan="2">모집단위</th>
         <th colspan="3" class="text-center" style="border-bottom:none">2025년(50%등급컷)</th>
         <th colspan="3" class="text-center" style="border-bottom:none">2026년(50%등급컷)</th>
         <th rowspan="2">변화</th>
@@ -722,7 +725,7 @@ function renderCompare(d2025, d2026) {
     const color5 = !urlMyGrade || urlGradeSystem === '5';
     html += `<tr>
       <td class="text-gray-500 text-xs">${escHtml(jeo)}</td>
-      <td>${escHtml(dep)}</td>
+      <td class="dept-col">${escHtml(dep)}</td>
       <td class="text-center">${color9 ? gradeBadge(g25)  : plainBadge9(g25)}</td>
       <td class="text-center">${color5 ? gradeBadge5(g25) : plainBadge5(g25)}</td>
       <td class="text-center">${verdictBadge(g25)}</td>
@@ -1070,7 +1073,7 @@ function applyMyGradeFilter(mode) {
 
   let html = `<table>
     <thead><tr>
-      <th class="text-left" style="min-width:120px">모집단위</th>
+      <th class="text-left dept-col">모집단위</th>
       <th>전형 수</th>
       <th>평균 50%컷<br><small class="font-normal text-gray-400">2025 수시전체</small></th>
       <th>50%컷 범위<br><small class="font-normal text-gray-400">최저 ~ 최고</small></th>
@@ -1086,7 +1089,7 @@ function applyMyGradeFilter(mode) {
 
     // 학과 요약 행 (굵게)
     html += `<tr class="${d.rowCls}">
-      <td class="font-bold">${escHtml(d.dept)}</td>
+      <td class="font-bold dept-col">${escHtml(d.dept)}</td>
       <td class="text-center text-gray-500">${d.rows.length}개</td>
       <td class="text-center">${gradeBadge(avg50Str)}</td>
       <td class="text-center text-gray-500 text-xs">${escHtml(rangeStr)}</td>
@@ -1099,7 +1102,7 @@ function applyMyGradeFilter(mode) {
       const g50 = r.grade_50 || '-';
       const g70 = r.grade_70 || '-';
       html += `<tr style="background:#f8f9fa">
-        <td class="text-gray-400 text-xs pl-5">└ ${escHtml(r.jeonhyeong)}</td>
+        <td class="text-gray-400 text-xs pl-5 dept-col">└ ${escHtml(r.jeonhyeong)}</td>
         <td class="text-center text-gray-400 text-xs">모집 ${escHtml(r.capacity)}명</td>
         <td class="text-center text-gray-600 text-xs font-bold">${g50}</td>
         <td class="text-center text-gray-400 text-xs">${g50} / ${g70}</td>
