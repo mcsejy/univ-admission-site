@@ -970,10 +970,10 @@ class BucketListApp {
         const info = this.getSelectedUni();
         if (info) {
             this.selectedLabel.innerHTML = `✅ <b>${this.escapeHtml(info.uni)}</b>${info.dept ? ` · ${this.escapeHtml(info.dept)}` : ''} 선택됨`;
-            this.selectedLabel.className = 'mt-3 pt-3 border-t border-slate-100 text-center text-xs font-bold text-violet-700 bg-violet-50 -mx-4 -mb-4 px-4 pb-4 rounded-b-2xl';
+            this.selectedLabel.className = 'mt-5 pt-4 border-t border-slate-100 text-center text-xs font-bold text-violet-700 bg-violet-50 -mx-4 -mb-4 px-4 pb-4 rounded-b-2xl';
         } else {
             this.selectedLabel.textContent = '👆 위 목록에서 대학을 탭하면 정보를 확인할 수 있어요';
-            this.selectedLabel.className = 'mt-3 pt-3 border-t border-slate-100 text-center text-xs text-slate-400';
+            this.selectedLabel.className = 'mt-5 pt-4 border-t border-slate-100 text-center text-xs text-slate-400';
         }
     }
 
