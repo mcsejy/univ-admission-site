@@ -701,7 +701,13 @@ class BucketListApp {
             : this.uniNames.slice(0, 8);
 
         if (matches.length === 0) {
-            this.hideUniSuggestions();
+            if (q) {
+                this.uniSuggestions.innerHTML =
+                    `<li class="px-3 py-2 text-amber-600 font-semibold cursor-default">⚠️ 목록에서 찾을 수 없어요. 대학명을 정확히 입력해주세요.</li>`;
+                this.uniSuggestions.classList.remove('hidden');
+            } else {
+                this.hideUniSuggestions();
+            }
             return;
         }
 
@@ -709,6 +715,17 @@ class BucketListApp {
             .map(name => `<li data-name="${this.escapeHtml(name)}" class="px-3 py-2 cursor-pointer hover:bg-violet-50 active:bg-violet-100">${this.escapeHtml(name)}</li>`)
             .join('');
         this.uniSuggestions.classList.remove('hidden');
+    }
+
+    /**
+     * 입력값을 목록의 정확한 대학명으로 보정 (부분 입력이 유일하게 일치할 때만)
+     * 예: "가천" → "가천대학교"
+     */
+    resolveUniName(input) {
+        if (!input) return input;
+        if (this.uniNames.includes(input)) return input;
+        const matches = this.uniNames.filter(name => name.includes(input));
+        return matches.length === 1 ? matches[0] : input;
     }
 
     hideUniSuggestions() {
@@ -874,7 +891,7 @@ class BucketListApp {
     handleAdd(e) {
         e.preventDefault();
 
-        const uni = this.uniInput.value.trim();
+        const uni = this.resolveUniName(this.uniInput.value.trim());
         const dept = this.deptInput.value.trim();
 
         if (!uni || !dept) {
