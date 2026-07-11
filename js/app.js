@@ -967,9 +967,13 @@ class BucketListApp {
         this.mapSection.classList.add('hidden');
         this.render();
         const info = this.getSelectedUni();
-        this.selectedLabel.textContent = info
-            ? `✅ 선택된 대학 : ${info.uni}  ${info.dept}`
-            : '아래 목록에서 대학을 선택하면 정보를 확인할 수 있습니다';
+        if (info) {
+            this.selectedLabel.innerHTML = `✅ <b>${this.escapeHtml(info.uni)}</b>${info.dept ? ` · ${this.escapeHtml(info.dept)}` : ''} 선택됨`;
+            this.selectedLabel.className = 'mt-3 pt-3 border-t border-slate-100 text-center text-xs font-bold text-violet-700 bg-violet-50 -mx-4 -mb-4 px-4 pb-4 rounded-b-2xl';
+        } else {
+            this.selectedLabel.textContent = '👆 위 목록에서 대학을 탭하면 정보를 확인할 수 있어요';
+            this.selectedLabel.className = 'mt-3 pt-3 border-t border-slate-100 text-center text-xs text-slate-400';
+        }
     }
 
     handleLocationSearch() {
@@ -1447,10 +1451,12 @@ class BucketListApp {
         const selectBtn = isSelected
             ? `<button onclick="event.stopPropagation(); app.handleSelect('${item.id}')"
                  title="선택 해제"
-                 class="flex-shrink-0 w-6 h-6 rounded-full bg-violet-500 border-2 border-violet-500 text-white flex items-center justify-center font-bold text-xs transition-all hover:scale-110 hover:bg-violet-600">✓</button>`
+                 class="flex-shrink-0 flex items-center gap-1 pl-1.5 pr-2.5 py-1 rounded-full bg-violet-500 border-2 border-violet-500 text-white text-[11px] font-bold transition-all hover:bg-violet-600">
+                 <span class="w-3.5 h-3.5 rounded-full bg-white text-violet-600 flex items-center justify-center text-[9px] leading-none">✓</span>선택됨</button>`
             : `<button onclick="event.stopPropagation(); app.handleSelect('${item.id}')"
                  title="선택"
-                 class="flex-shrink-0 w-6 h-6 rounded-full border-2 border-slate-300 bg-white flex items-center justify-center transition-all hover:border-violet-400 hover:bg-violet-50 hover:scale-110"></button>`;
+                 class="flex-shrink-0 flex items-center gap-1 pl-1.5 pr-2.5 py-1 rounded-full border-2 border-slate-300 bg-white text-slate-400 text-[11px] font-bold transition-all hover:border-violet-400 hover:text-violet-500 hover:bg-violet-50">
+                 <span class="w-3.5 h-3.5 rounded-full border-2 border-current"></span>선택</button>`;
 
         return `
             <div class="bucket-item ${selectedClass} bg-white rounded-xl p-3 flex items-center gap-3 shadow-sm border border-slate-100 hover:shadow-md transition-all cursor-pointer"
