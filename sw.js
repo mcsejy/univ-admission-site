@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bucket-list-v1';
+const CACHE_NAME = 'bucket-list-v2';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -55,42 +55,31 @@ self.addEventListener('fetch', event => {
         return;
     }
 
+    // 네트워크 우선: 온라인이면 항상 최신 배포본을 가져오고, 오프라인일 때만 캐시를 사용
     event.respondWith(
-        caches.match(event.request).then(response => {
-            // 캐시에 있으면 반환
-            if (response) {
+        fetch(event.request).then(response => {
+            if (!response || response.status !== 200 || response.type === 'error') {
                 return response;
             }
 
-            // 네트워크에서 가져오기
-            return fetch(event.request).then(response => {
-                // 200 상태 코드가 아니면 캐싱하지 않음
-                if (!response || response.status !== 200 || response.type === 'error') {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+                cache.put(event.request, responseToCache);
+            });
+
+            return response;
+        }).catch(() => {
+            return caches.match(event.request).then(response => {
+                if (response) {
                     return response;
                 }
-
-                // 응답 복제
-                const responseToCache = response.clone();
-
-                caches.open(CACHE_NAME).then(cache => {
-                    cache.put(event.request, responseToCache);
-                });
-
-                return response;
-            }).catch(() => {
-                // 네트워크 실패 시 캐시된 응답 반환
-                return caches.match(event.request).then(response => {
-                    if (response) {
-                        return response;
-                    }
-                    // 모든 실패 시 오프라인 페이지 반환 가능
-                    return new Response('오프라인 상태입니다. 인터넷 연결을 확인하세요.', {
-                        status: 503,
-                        statusText: 'Service Unavailable',
-                        headers: new Headers({
-                            'Content-Type': 'text/plain; charset=utf-8'
-                        })
-                    });
+                // 모든 실패 시 오프라인 페이지 반환 가능
+                return new Response('오프라인 상태입니다. 인터넷 연결을 확인하세요.', {
+                    status: 503,
+                    statusText: 'Service Unavailable',
+                    headers: new Headers({
+                        'Content-Type': 'text/plain; charset=utf-8'
+                    })
                 });
             });
         })
