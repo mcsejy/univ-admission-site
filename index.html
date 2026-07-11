@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="대학 리스트">
+    <meta name="theme-color" content="#8b5cf6">
+    <meta name="msapplication-TileColor" content="#8b5cf6">
+    <meta name="application-name" content="나의 대학 리스트">
+    <meta name="description" content="목표 대학을 기록하고 입시 정보를 한눈에 확인하세요">
+    <title>나의 입시리스트</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%238b5cf6' width='180' height='180'/><text x='50%' y='50%' text-anchor='middle' dy='.3em' font-family='Noto Sans KR, sans-serif' font-size='48' font-weight='900' fill='white' dominant-baseline='central'>📚</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect fill='%238b5cf6' width='32' height='32'/><text x='50%' y='50%' text-anchor='middle' dy='.3em' font-family='Noto Sans KR, sans-serif' font-size='16' font-weight='900' fill='white' dominant-baseline='central'>📚</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="min-h-screen py-6 px-3 sm:py-10 sm:px-4 safe-area-inset">
+    <div class="container mx-auto max-w-2xl">
+
+        <!-- 헤더 -->
+        <header class="text-center mb-6 sm:mb-10">
+            <div class="inline-flex items-center justify-center gap-2 sm:gap-3 mb-2">
+                <div class="uni-icon-badge inline-flex items-center justify-center w-10 sm:w-12 h-10 sm:h-12 rounded-2xl flex-shrink-0">
+                    <svg class="w-6 sm:w-7 h-6 sm:h-7" viewBox="0 0 24 24" fill="white">
+                        <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>
+                    </svg>
+                </div>
+                <h1 class="text-2xl sm:text-4xl font-black gradient-text">나의 대학 리스트</h1>
+            </div>
+            <p class="text-slate-400 text-xs sm:text-sm">목표 대학을 기록하세요</p>
+        </header>
+
+        <!-- 입력 폼 -->
+        <div class="input-card rounded-2xl p-3 mb-0">
+            <form id="bucketForm">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <div class="flex-1 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                        <label class="text-xs sm:text-sm font-bold text-slate-600 flex-shrink-0">대학명 :</label>
+                        <input
+                            type="text"
+                            id="uniInput"
+                            placeholder="예) 서울대학교"
+                            class="bucket-input flex-1 px-3 py-2.5 rounded-xl text-slate-800 text-sm"
+                            required
+                        >
+                    </div>
+                    <div class="flex-1 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                        <label class="text-xs sm:text-sm font-bold text-slate-600 flex-shrink-0">학과 :</label>
+                        <input
+                            type="text"
+                            id="deptInput"
+                            placeholder="예) 컴퓨터공학과"
+                            class="bucket-input flex-1 px-3 py-2.5 rounded-xl text-slate-800 text-sm"
+                            required
+                        >
+                    </div>
+                    <button type="submit" class="w-full sm:w-auto sm:flex-shrink-0 px-4 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-600 hover:to-indigo-600 text-white rounded-xl font-semibold text-sm shadow-md hover:shadow-lg transition-all">
+                        + 추가
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 버킷 리스트 목록 -->
+        <div id="bucketListContainer" class="space-y-2 mb-5"></div>
+
+        <!-- 빈 상태 메시지 -->
+        <div id="emptyState" class="hidden text-center py-10 mb-5">
+            <div class="text-5xl mb-3">✨</div>
+            <p class="text-slate-500 font-medium text-sm">아직 목표 대학이 없어요</p>
+            <p class="text-slate-400 text-xs mt-1">위에서 대학을 입력해보세요!</p>
+        </div>
+
+        <!-- 정보 버튼 -->
+        <div class="stats-card rounded-2xl p-4 mb-5">
+            <div class="grid grid-cols-4 gap-2">
+                <button id="locationBtn" class="info-btn location-btn">
+                    <svg class="info-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    <p class="info-label">위치</p>
+                </button>
+                <button id="homepageBtn" class="info-btn homepage-btn">
+                    <svg class="info-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                    </svg>
+                    <p class="info-label">대학 홈페이지</p>
+                </button>
+                <button id="admissionBtn" class="info-btn admission-btn">
+                    <svg class="info-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                    </svg>
+                    <p class="info-label">입결정보</p>
+                </button>
+                <button id="gradeBtn" class="info-btn grade-btn">
+                    <svg class="info-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                    </svg>
+                    <p class="info-label">나의 등급</p>
+                </button>
+            </div>
+            <div id="selectedLabel" class="mt-3 pt-3 border-t border-slate-100 text-center text-xs text-slate-400">
+                아래 목록에서 대학을 선택하면 정보를 확인할 수 있습니다
+            </div>
+        </div>
+
+        <!-- 입결정보 패널 -->
+        <div id="admissionSection" class="hidden mb-5">
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                <div class="flex justify-end px-3 pt-2">
+                    <button id="closeAdmission" class="map-close">✕</button>
+                </div>
+                <div class="p-4 space-y-3">
+                    <!-- 2028 핵심 변경사항 -->
+                    <div class="bg-violet-50 rounded-xl p-3">
+                        <p class="text-xs font-bold text-violet-700 mb-2">📌 2028 입시 핵심 변경사항</p>
+                        <ul class="text-xs text-slate-600 space-y-1 leading-relaxed">
+                            <li>• 내신 <b>5등급 상대평가</b> 전면 도입 — 교과전형 핵심 지표</li>
+                            <li>• 선택과목 폐지 → <b>통합형 수능</b> (국어·수학·탐구 통합)</li>
+                            <li>• 수시 <b>80.8%</b> / 정시 <b>19.2%</b> — 교과·종합 비중 확대</li>
+                            <li>• 대학별 <b>수능 최저학력기준</b> 사전 확인 필수</li>
+                            <li>• 면접 없이 <b>내신 100%</b> 반영 대학 증가 추세</li>
+                        </ul>
+                    </div>
+                    <!-- 학과별 2028 주요 과목 테이블 (동적) -->
+                    <div id="subjectTableSection"></div>
+                    <!-- 선택 대학 시행계획 PDF 직접 링크 (동적) -->
+                    <div id="uniPlanLinkWrap" class="hidden">
+                        <button id="uniPlanLink"
+                           class="w-full flex items-center gap-2 px-3 py-2.5 bg-emerald-50 rounded-xl text-emerald-700 text-xs font-semibold hover:bg-emerald-100 transition-colors text-left">
+                            📄 2028 시행계획 PDF 바로보기
+                        </button>
+                    </div>
+                    <!-- 선택 대학 입학처 링크 (동적) -->
+                    <div id="uniAdmLinkWrap" class="hidden">
+                        <a id="uniAdmLink" href="#" target="_blank"
+                           class="flex items-center gap-2 px-3 py-2.5 bg-violet-50 rounded-xl text-violet-700 text-xs font-semibold hover:bg-violet-100 transition-colors">
+                            🎓 입학처 홈페이지 바로가기
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 지도 섹션 -->
+        <div id="mapSection" class="hidden mb-5">
+            <div class="map-card rounded-2xl overflow-hidden">
+                <div class="map-header">
+                    <span id="mapTitle" class="map-title">📍 위치 검색 결과</span>
+                    <button id="closeMap" class="map-close">✕</button>
+                </div>
+                <iframe id="mapFrame" src="" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- 수정 모달 -->
+    <div id="editModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="modal-card bg-white rounded-2xl p-6 max-w-md w-full">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">✏️ 수정하기</h3>
+            <form id="editForm">
+                <input
+                    type="text"
+                    id="editInput"
+                    class="bucket-input w-full px-4 py-3 rounded-xl mb-4 text-slate-800"
+                    required
+                >
+                <div class="flex gap-2 justify-end">
+                    <button type="button" id="cancelEdit" class="cancel-btn px-5 py-2.5 rounded-xl font-medium text-sm">취소</button>
+                    <button type="submit" class="save-btn px-5 py-2.5 text-white rounded-xl font-medium text-sm">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 등급 입력 모달 -->
+    <div id="gradeModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl overflow-hidden">
+
+            <!-- 모달 헤더 -->
+            <div class="bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-5">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="bg-white/20 rounded-xl p-1.5">
+                            <svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-white">
+                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">나의 등급 확인</h3>
+                    </div>
+                    <button id="openApiKeyBtn" title="Gemini API 키 설정"
+                            class="flex items-center gap-1 px-2 py-1 rounded-lg text-white/60 hover:bg-white/20 hover:text-white transition-colors text-xs">
+                        <svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
+                            <path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+                        </svg>
+                        API 키
+                    </button>
+                </div>
+                <p id="gradeModalLabel" class="text-xs text-violet-200 font-medium mt-2 truncate">대학을 선택하세요</p>
+            </div>
+
+            <!-- 모달 바디 -->
+            <div class="p-6">
+                <!-- 등급제 선택 -->
+                <div class="flex gap-3 mb-4">
+                    <label class="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border-2 border-slate-200 text-xs font-semibold text-slate-500 cursor-pointer hover:border-violet-300 hover:text-violet-600 transition-all has-[:checked]:border-violet-500 has-[:checked]:bg-violet-50 has-[:checked]:text-violet-700">
+                        <input type="radio" name="gradeSystem" value="9" class="accent-violet-500 hidden"> 9등급제 (현행)
+                    </label>
+                    <label class="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border-2 border-slate-200 text-xs font-semibold text-slate-500 cursor-pointer hover:border-indigo-300 hover:text-indigo-600 transition-all has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 has-[:checked]:text-indigo-700">
+                        <input type="radio" name="gradeSystem" value="5" checked class="accent-indigo-500 hidden"> 5등급제 (2028~)
+                    </label>
+                </div>
+
+                <!-- 등급 입력 -->
+                <input type="number" id="gradeInput" min="1" max="9" step="0.1" placeholder="예) 2.5"
+                       class="bucket-input w-full px-4 py-3 rounded-xl text-slate-800 mb-1">
+                <p id="gradeInputHint" class="text-xs text-slate-400 mb-5">1~9 등급 입력 (소수점 가능)</p>
+
+                <!-- 버튼 -->
+                <div class="flex gap-2 justify-end">
+                    <!-- 취소 버튼 -->
+                    <button type="button" id="cancelGrade"
+                            class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 transition-all">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-4 h-4 text-slate-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        <span class="text-xs font-semibold text-slate-500">취소</span>
+                    </button>
+                    <!-- 확인 버튼 -->
+                    <button type="button" id="gradeModalMusicBtn"
+                            class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-600 hover:to-indigo-600 shadow-md hover:shadow-lg transition-all">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-4 h-4 text-white">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-xs font-semibold text-white">확인</span>
+                    </button>
+                    <!-- <button type="button" id="submitGrade" class="px-5 py-2.5 text-white rounded-xl font-medium text-sm bg-violet-500 hover:bg-violet-600 transition-colors">확인</button> -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 등급 결과 모달 -->
+    <div id="gradeResultModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div id="gradeResultCard" class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border-2 border-slate-200">
+            <div id="gradeResultIcon" class="text-4xl text-center mb-2"></div>
+            <h3 id="gradeResultTitle" class="text-base font-bold text-center mb-4"></h3>
+            <div id="gradeResultContent" class="space-y-2 mb-4 text-sm"></div>
+            <button id="closeGradeResult" class="w-full py-2.5 bg-violet-500 text-white rounded-xl font-semibold text-sm hover:bg-violet-600 transition-colors">닫기</button>
+        </div>
+    </div>
+
+    <!-- Gemini API 키 설정 모달 -->
+    <div id="apiKeyModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+            <h3 class="text-base font-bold text-slate-800 mb-1">🔑 Gemini API 키 설정</h3>
+            <p class="text-xs text-slate-500 mb-3">입결 자동 조회를 위해 Google Gemini API 키가 필요합니다.</p>
+            <input type="text" id="apiKeyInput" placeholder="AIzaSy..."
+                   class="bucket-input w-full px-4 py-3 rounded-xl text-slate-800 mb-2 text-xs font-mono">
+            <p class="text-xs text-slate-400 mb-5">
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-indigo-500 underline">Google AI Studio</a>에서 무료 발급 가능 (로그인 후 Create API key)
+            </p>
+            <div class="flex gap-2 justify-end">
+                <button id="cancelApiKey" class="px-5 py-2.5 rounded-xl font-medium text-sm bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">취소</button>
+                <button id="saveApiKey" class="px-5 py-2.5 text-white rounded-xl font-medium text-sm bg-violet-500 hover:bg-violet-600 transition-colors">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // 서비스 워커 등록 (오프라인 지원 및 캐싱)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
+        }
+        // 상태 바 색상 설정 (iOS 15+)
+        document.documentElement.style.setProperty('--safe-area-inset-top', 'env(safe-area-inset-top)');
+        document.documentElement.style.setProperty('--safe-area-inset-bottom', 'env(safe-area-inset-bottom)');
+        document.documentElement.style.setProperty('--safe-area-inset-left', 'env(safe-area-inset-left)');
+        document.documentElement.style.setProperty('--safe-area-inset-right', 'env(safe-area-inset-right)');
+    </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+
+# 로컬 전용 설정
+.claude/settings.local.json
+
+# 디버그/검증 스크립트 결과물
+*_result*.txt
+*_result*.json
+popup_output.html
+popup_text.txt
+
+# OS / 에디터
+.DS_Store
+Thumbs.db
+
+# 환경 변수
+.env
