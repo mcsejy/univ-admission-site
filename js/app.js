@@ -1450,22 +1450,22 @@ class BucketListApp {
         const selectedClass = isSelected ? 'selected' : '';
 
         const selectBtn = `
-            <label class="flex-shrink-0 flex flex-col items-center gap-0.5 cursor-pointer select-none px-1 py-0.5"
+            <label class="flex-shrink-0 flex items-center gap-1 cursor-pointer select-none py-0.5"
                    onclick="event.stopPropagation()" title="체크하면 정보를 확인할 수 있어요">
                 <input type="checkbox" class="uni-checkbox" ${isSelected ? 'checked' : ''}
                        onchange="app.handleSelect('${item.id}')">
-                <span class="text-[9px] font-bold ${isSelected ? 'text-violet-600' : 'text-slate-400'}">정보보기</span>
+                <span class="text-[10px] font-bold ${isSelected ? 'text-violet-600' : 'text-slate-400'}">선택</span>
             </label>`;
 
         return `
-            <div class="bucket-item ${selectedClass} bg-white rounded-xl p-3 flex items-center gap-3 shadow-sm border border-slate-100 hover:shadow-md transition-all cursor-pointer"
+            <div class="bucket-item ${selectedClass} bg-white rounded-xl p-2.5 flex items-center gap-3 shadow-sm border border-slate-100 hover:shadow-md transition-all cursor-pointer"
                  data-id="${item.id}" onclick="app.handleSelect('${item.id}')">
                 ${selectBtn}
                 <div class="flex-1 min-w-0">
                     <p class="text-xs font-semibold text-slate-800 truncate">
                         ${uni}${dept ? `<span class="text-violet-500 font-medium"> · ${dept}</span>` : ''}
+                        <span class="text-slate-400 font-normal" style="font-size:0.65rem"> · ${date} 추가</span>
                     </p>
-                    <p class="text-xs text-slate-400 mt-0.5" style="font-size:0.65rem">${date} 추가</p>
                 </div>
                 <div class="flex gap-1.5 flex-shrink-0" onclick="event.stopPropagation()">
                     <button
