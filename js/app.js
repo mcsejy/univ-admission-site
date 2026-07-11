@@ -1454,7 +1454,7 @@ class BucketListApp {
                    onclick="event.stopPropagation()" title="체크하면 정보를 확인할 수 있어요">
                 <input type="checkbox" class="uni-checkbox" ${isSelected ? 'checked' : ''}
                        onchange="app.handleSelect('${item.id}')">
-                <span class="text-[10px] font-bold ${isSelected ? 'text-violet-600' : 'text-slate-400'}">선택</span>
+                <span class="text-[10px] font-bold ${isSelected ? 'text-violet-600' : 'text-slate-400'}">${isSelected ? '선택됨' : '선택'}</span>
             </label>`;
 
         return `
