@@ -686,8 +686,33 @@ class BucketListApp {
      */
     init() {
         this.cacheElements();
+        this.uniNames = Object.keys(UNIV_CODE_MAP).sort((a, b) => a.localeCompare(b, 'ko'));
         this.bindEvents();
         this.render();
+    }
+
+    /**
+     * 대학명 입력값에 맞는 자동완성 목록 표시
+     */
+    renderUniSuggestions() {
+        const q = this.uniInput.value.trim();
+        const matches = q
+            ? this.uniNames.filter(name => name.includes(q)).slice(0, 8)
+            : this.uniNames.slice(0, 8);
+
+        if (matches.length === 0) {
+            this.hideUniSuggestions();
+            return;
+        }
+
+        this.uniSuggestions.innerHTML = matches
+            .map(name => `<li data-name="${this.escapeHtml(name)}" class="px-3 py-2 cursor-pointer hover:bg-violet-50 active:bg-violet-100">${this.escapeHtml(name)}</li>`)
+            .join('');
+        this.uniSuggestions.classList.remove('hidden');
+    }
+
+    hideUniSuggestions() {
+        this.uniSuggestions.classList.add('hidden');
     }
 
     /**
@@ -697,6 +722,7 @@ class BucketListApp {
         // 폼 요소
         this.bucketForm = document.getElementById('bucketForm');
         this.uniInput = document.getElementById('uniInput');
+        this.uniSuggestions = document.getElementById('uniSuggestions');
         this.deptInput = document.getElementById('deptInput');
 
         // 정보 버튼 / 지도
@@ -757,6 +783,19 @@ class BucketListApp {
     bindEvents() {
         // 폼 제출 이벤트
         this.bucketForm.addEventListener('submit', (e) => this.handleAdd(e));
+
+        // 대학명 자동완성 이벤트
+        this.uniInput.addEventListener('input', () => this.renderUniSuggestions());
+        this.uniInput.addEventListener('focus', () => this.renderUniSuggestions());
+        this.uniInput.addEventListener('blur', () => setTimeout(() => this.hideUniSuggestions(), 150));
+        this.uniSuggestions.addEventListener('mousedown', (e) => {
+            const li = e.target.closest('li[data-name]');
+            if (!li) return;
+            e.preventDefault();
+            this.uniInput.value = li.dataset.name;
+            this.hideUniSuggestions();
+            this.deptInput.focus();
+        });
 
         // 정보 버튼 이벤트
         this.locationBtn.addEventListener('click',  () => this.handleLocationSearch());
@@ -845,6 +884,7 @@ class BucketListApp {
         BucketStorage.addItem(`${uni}||${dept}`);
         this.uniInput.value = '';
         this.deptInput.value = '';
+        this.hideUniSuggestions();
         this.uniInput.focus();
         this.render();
     }
