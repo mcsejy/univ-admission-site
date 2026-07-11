@@ -6,7 +6,11 @@
 <title>합격등급 비교 — 2025 vs 2026</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  body { font-family: 'Noto Sans KR', sans-serif; }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: linear-gradient(180deg, #f5f3ff 0%, #f7f6ff 30%, #f8fafc 100%);
+    background-attachment: fixed;
+  }
   .grade-badge {
     display: inline-block;
     min-width: 2.5rem;
@@ -21,10 +25,19 @@
   .grade-low   { background: #fee2e2; color: #991b1b; }
   .grade-none  { background: #f3f4f6; color: #9ca3af; }
   table { border-collapse: collapse; width: 100%; }
-  th, td { border: 1px solid #e5e7eb; padding: 0.35rem 0.5rem; font-size: 0.8rem; word-break: keep-all; overflow-wrap: break-word; }
-  th { background: #f1f5f9; font-weight: 600; text-align: center; }
+  th, td { border: 1px solid #eef0f6; padding: 0.45rem 0.6rem; font-size: 0.8rem; word-break: keep-all; overflow-wrap: break-word; }
+  th {
+    background: #eef1fb;
+    font-weight: 700;
+    text-align: center;
+    color: #4338ca;
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+    border-bottom: 2px solid #c7d2fe;
+  }
   td:first-child { font-weight: 500; }
-  tr:hover td { background: #f8fafc; }
+  tbody tr:nth-child(even) td { background: #fafafe; }
+  tr:hover td { background: #f2f0ff; }
   @media (max-width: 640px) {
     .dept-col { width: 100px; max-width: 100px; }
   }
@@ -38,17 +51,17 @@
   .verdict-none   { color: #9ca3af; }
 </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="min-h-screen">
 
 <!-- 헤더 -->
-<div class="bg-indigo-700 text-white px-6 py-4 shadow">
-  <h1 class="text-xl font-bold">합격등급 비교 <span class="text-indigo-200 font-normal text-base">— 경기진협 2028 대비</span></h1>
+<div class="bg-gradient-to-r from-indigo-700 via-indigo-600 to-purple-600 text-white px-6 py-5 shadow-lg">
+  <h1 class="text-xl font-bold tracking-tight">📊 합격등급 비교 <span class="text-indigo-200 font-normal text-base">— 경기진협 2028 대비</span></h1>
   <p class="text-indigo-200 text-sm mt-0.5">adiga.kr 공식 데이터 기반 · 2025 vs 2026 합격등급(50%컷) 비교</p>
 </div>
 
 <!-- 검색 영역 -->
 <div class="max-w-4xl mx-auto mt-6 px-4">
-  <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+  <div class="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
 
     <!-- 카드 상단 타이틀 바 -->
     <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-4 flex items-center gap-3">
@@ -150,20 +163,20 @@
 <div class="max-w-6xl mx-auto mt-6 px-4 pb-12" id="resultArea" style="display:none">
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <!-- 2025 -->
-    <div class="bg-white rounded-xl shadow overflow-hidden">
-      <div class="bg-blue-600 text-white px-4 py-3 font-bold text-sm">📊 2025학년도 전형 결과 <span class="font-normal text-blue-200">(2024학년도 합격등급)</span></div>
+    <div class="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-3 font-bold text-sm">📊 2025학년도 전형 결과 <span class="font-normal text-blue-200">(2024학년도 합격등급)</span></div>
       <div id="result2025" class="p-4 overflow-x-auto text-xs"></div>
     </div>
     <!-- 2026 -->
-    <div class="bg-white rounded-xl shadow overflow-hidden">
-      <div class="bg-green-600 text-white px-4 py-3 font-bold text-sm">📊 2026학년도 전형 결과 <span class="font-normal text-green-200">(2025학년도 합격등급)</span></div>
+    <div class="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+      <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 py-3 font-bold text-sm">📊 2026학년도 전형 결과 <span class="font-normal text-emerald-100">(2025학년도 합격등급)</span></div>
       <div id="result2026" class="p-4 overflow-x-auto text-xs"></div>
     </div>
   </div>
   <!-- 요약 비교 -->
-  <div id="compareArea" class="mt-6 bg-white rounded-xl shadow p-5" style="display:none">
-    <div class="flex items-center justify-between mb-3">
-      <h3 class="font-bold text-sm text-gray-700">▶ 학과별 등급 변화 비교</h3>
+  <div id="compareArea" class="mt-6 bg-white rounded-2xl shadow-lg border border-slate-100 p-5" style="display:none">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-bold text-base text-gray-800 flex items-center gap-1.5">📈 학과별 등급 변화 비교</h3>
       <span id="compareMyGradeTag" class="hidden px-3 py-1 bg-purple-100 text-purple-700 font-bold rounded-full text-xs border border-purple-200"></span>
     </div>
     <div id="compareTable" class="overflow-x-auto"></div>
@@ -656,7 +669,7 @@ function renderResult(containerId, yearData) {
   for (const [label, rows] of Object.entries(yearData.data)) {
     if (!rows || rows.length === 0) continue;
     html += `<div class="mb-4">
-      <p class="text-xs font-bold text-gray-600 mb-1 bg-gray-100 px-2 py-1 rounded">${escHtml(label)}</p>
+      <p class="text-xs font-bold text-indigo-700 mb-1.5 bg-indigo-50 px-2.5 py-1.5 rounded-lg border border-indigo-100">${escHtml(label)}</p>
       <table>
         <thead><tr>
           <th class="text-left">전형</th>
