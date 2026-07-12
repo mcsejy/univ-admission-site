@@ -90,11 +90,21 @@ async def fetch_grade_data(unv_cd: str, year: str, tab: str = "교과", dept_fil
 
             if resp and len(resp) > 100:
                 rows = parse_grade_html(resp, dept_filter)
-                # 탭에 맞는 전형명만 남김 (adiga.kr가 탭 전환 후 이전 탭 데이터를 그대로 렌더링하는 경우 방어)
-                TAB_JEONHYEONG = {"교과": "교과", "종합": "종합", "수능": "수능"}
-                kw = TAB_JEONHYEONG.get(tab)
+                # 탭에 맞는 전형명만 남김. 단, 세종대 "세종창의인재" 처럼 대학이 전형명을
+                # 자체 브랜드명으로 붙여 교과/종합/수능 중 어느 키워드도 없는 경우는
+                # 다른 탭 소속이라고 확신할 수 없으므로 걸러내지 않고 그대로 포함한다(fail-open).
+                TAB_KEYWORDS = {"교과": "교과", "종합": "종합", "수능": "수능"}
+                kw = TAB_KEYWORDS.get(tab)
                 if kw:
-                    rows = [r for r in rows if kw in r.get("jeonhyeong", "")]
+                    other_kws = [v for k, v in TAB_KEYWORDS.items() if k != tab]
+                    def belongs_to_tab(r):
+                        jeonhyeong = r.get("jeonhyeong", "")
+                        if kw in jeonhyeong:
+                            return True
+                        if any(o in jeonhyeong for o in other_kws):
+                            return False
+                        return True
+                    rows = [r for r in rows if belongs_to_tab(r)]
                 results[label] = rows
 
         await browser.close()
@@ -105,10 +115,6 @@ def parse_grade_html(html_text: str, dept_filter: str = "") -> list:
     """adiga.kr 결과 HTML 에서 학과별 합격등급 파싱."""
     soup = BeautifulSoup(html_text, "html.parser")
     all_rows = []
-
-    # 전형명 인정 키워드 (이 단어가 포함된 전형만 결과로 처리)
-    JEONHYEONG_KEYWORDS = ("학생부", "인하미래인재", "교과", "종합", "수능", "지역", "사회배려", "기회균형",
-                           "고른기회", "농어촌", "특성화", "사범", "고교", "예체능")
 
     for table in soup.find_all("table"):
         rows = table.find_all("tr")
@@ -123,8 +129,7 @@ def parse_grade_html(html_text: str, dept_filter: str = "") -> list:
         if not first_cell.startswith("모집단위"):
             continue
         jeonhyeong = first_tds[1].get_text(strip=True)
-        # 유효한 전형명인지 확인
-        if not any(kw in jeonhyeong for kw in JEONHYEONG_KEYWORDS):
+        if not jeonhyeong:
             continue
 
         # 행3 이후: 실제 학과 데이터
@@ -263,7 +268,7 @@ UNIV_LIST = [
     {"name": "서경대학교",           "region": "서울", "code": "0000121"},
     {"name": "성균관대학교",         "region": "서울", "code": "0000133"},
     {"name": "성신여자대학교",       "region": "서울", "code": "0000143"},
-    {"name": "세종대학교",           "region": "서울", "code": "0000145"},
+    {"name": "세종대학교",           "region": "서울", "code": "0000138"},
     {"name": "숙명여자대학교",       "region": "서울", "code": "0000147"},
     {"name": "숭실대학교",           "region": "서울", "code": "0000148"},
     {"name": "연세대학교",           "region": "서울", "code": "0000149"},
