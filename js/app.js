@@ -918,7 +918,6 @@ class BucketListApp {
         this.uniInput.value = '';
         this.deptInput.value = '';
         this.hideUniSuggestions();
-        this.uniInput.focus();
         this.render();
     }
 

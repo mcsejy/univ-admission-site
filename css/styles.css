@@ -248,15 +248,15 @@ body.safe-area-inset {
 
 /* 삭제 버튼 */
 .delete-btn {
-    background: transparent;
-    color: #cbd5e1;
-    border: 1.5px solid transparent;
+    background: #fef2f2;
+    color: #f87171;
+    border: 1.5px solid #fee2e2;
 }
 
 .delete-btn:hover {
-    background: #fef2f2;
+    background: #fee2e2;
     color: #ef4444;
-    border-color: #fecaca;
+    border-color: #fca5a5;
 }
 
 /* 스크롤바 스타일 (Chrome, Safari) */
