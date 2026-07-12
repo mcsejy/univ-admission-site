@@ -132,7 +132,7 @@
             </svg>
             학과 검색 <span class="font-normal text-gray-400">(선택)</span>
           </label>
-          <input id="deptFilter" placeholder="예: 반도체, 경영 — 조회 후 실시간 필터" class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white transition" />
+          <input id="deptFilter" placeholder="예: 반도체, 경영 — 입력 후 조회 버튼을 눌러주세요" class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white transition" />
         </div>
 
       </div>
@@ -511,7 +511,6 @@ document.getElementById('univCode').addEventListener('input', e => {
 });
 document.getElementById('deptFilter').addEventListener('input', () => {
   updateInfoBar();
-  reRenderWithDeptFilter(); // 이미 조회된 데이터 있으면 실시간 필터링
 });
 
 document.getElementById('searchBtn').addEventListener('click', async () => {
